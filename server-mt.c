@@ -13,7 +13,7 @@
 #define MAX_CLIENTS 15  
 int Equipamentos[15];
 
-int addEquipament(char buf[BUFSZ]){
+void addEquipament(char buf[BUFSZ],char response[BUFSZ]){
    //Verificamos o numero total de equipamentos
    int equipTotais = 0;
    for(int i = 0; i < MAX_CLIENTS; i++){
@@ -24,7 +24,6 @@ int addEquipament(char buf[BUFSZ]){
     //Se o numero de equipamentos for 15 retornamos 0
     if(equipTotais == 15){
       sprintf(buf, "Equipment limit exceeded");
-      return 0;
     }
 
     //fazer o tratamento do ID aqui dentro
@@ -38,7 +37,8 @@ int addEquipament(char buf[BUFSZ]){
         }
     }
     // coloca o ID do equipamento no buffer
-    sprintf(buf, "New ID: 0%d", NumEquip);
+    sprintf(response, "New ID: 0%d", NumEquip);
+    sprintf(buf,"Equipament 0%d added", NumEquip);
 }
 
 
@@ -59,14 +59,18 @@ void * client_thread(void *data) {
 
     char caddrstr[BUFSZ];
     addrtostr(caddr, caddrstr, BUFSZ);
-    printf("[log] connection from %s\n", caddrstr);
+    //printf("[log] connection from %s\n", caddrstr);
 
+    //Buf será nosso input do cliente
     char buf[BUFSZ];
     memset(buf, 0, BUFSZ);
+    //Response será nossa resposta ao cliente
+    char response[BUFSZ];
+    memset(response, 0, BUFSZ);
     //função para adicionar
-    addEquipament(buf);
+    addEquipament(buf,response);
     puts(buf);
-    //colocar um send com a resposta
+    //colocar um send com e evniar a resposta para o cliente
 
     while(1){
     memset(buf, 0, BUFSZ);
