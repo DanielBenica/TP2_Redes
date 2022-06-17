@@ -12,33 +12,50 @@
 #define BUFSZ 1024
 #define MAX_CLIENTS 15  
 int Equipamentos[15];
+//Vetor de sockets
+int Sockets[MAX_CLIENTS] = {0};
 
-void addEquipament(char buf[BUFSZ],char response[BUFSZ]){
+void BroadcastNewEquipment(int IdEquipment, char buf[BUFSZ]){
+    int i;    
+    for(i = 0; i < MAX_CLIENTS; i++){
+        if(Sockets[i] != 0){
+            send(Sockets[i],message,strlen(message)+1,0);
+        }
+}
+}
+
+int addEquipment(char buf[BUFSZ],int csock){
    //Verificamos o numero total de equipamentos
-   int equipTotais = 0;
+   char response[BUFSZ];
+   memset(response, 0, BUFSZ);
+   int equipTotais = 14;
    for(int i = 0; i < MAX_CLIENTS; i++){
-      if(Equipamentos[i] != 0){
+      if(Sockets[i] != 0){
         equipTotais ++;
       }
    }
     //Se o numero de equipamentos for 15 retornamos 0
     if(equipTotais == 15){
-      sprintf(buf, "Equipment limit exceeded");
+      sprintf(response, "7 - - 4");
+      send(csock, response, strlen(response) + 1, 0);
+      return 0;
     }
 
     //fazer o tratamento do ID aqui dentro
    int NumEquip = 0;
     //cria a novo id para o equipamento
     for(int i = 0; i < MAX_CLIENTS; i++){
-        if(Equipamentos[i] == 0){
+        if(Sockets[i] == 0){
             NumEquip = i+1;
-            Equipamentos[i] = i+1;
+            Sockets[i] = csock;
             break;
         }
     }
-    // coloca o ID do equipamento no buffer
-    sprintf(response, "New ID: 0%d", NumEquip);
+    // coloca o ID do equipamento no buffer e an resposta
+    sprintf(response, "8 - %d 2", NumEquip);
+    send(csock, response, strlen(response) + 1, 0);
     sprintf(buf,"Equipament 0%d added", NumEquip);
+    return NumEquip;
 }
 
 
@@ -57,6 +74,7 @@ void * client_thread(void *data) {
     struct client_data *cdata = (struct client_data *)data;
     struct sockaddr *caddr = (struct sockaddr *)(&cdata->storage);
 
+    int IdEquipamento = 0;
     char caddrstr[BUFSZ];
     addrtostr(caddr, caddrstr, BUFSZ);
     //printf("[log] connection from %s\n", caddrstr);
@@ -68,10 +86,16 @@ void * client_thread(void *data) {
     char response[BUFSZ];
     memset(response, 0, BUFSZ);
     //função para adicionar
-    addEquipament(buf,response);
+    IdEquipamento = addEquipment(buf,cdata->csock);
     puts(buf);
+    if(!IdEquipamento){
+       close(Sockets[IdEquipamento-1]);
+       return;
+    }
+    //Implementar a logica de broadcast aqui
+    BroadcastNewEquipment(IdEquipamento,buf);
     //colocar um send com e evniar a resposta para o cliente
-
+    //send(cdata->csock, response, strlen(response) + 1, 0);
     while(1){
     memset(buf, 0, BUFSZ);
     printf("[log] waiting for data\n");	

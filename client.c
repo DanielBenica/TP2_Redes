@@ -8,7 +8,88 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
+#define BUFSZ 1024
 
+int flagRemove = 0;
+
+void handleERROR(char IdDest[BUFSZ], char Payload[BUFSZ],int s){
+   char response[BUFSZ];
+   memset(response, 0, BUFSZ);
+
+   switch (atoi(Payload)){
+	case 1:
+		break;
+	case 2:
+		break;
+	case 3:
+		break;
+	case 4:
+		printf("Equipment limit exceded\n");
+		close(s);
+		flagRemove = 1;
+		break;
+		//talvez tem q fechar a conexao
+   }
+
+}
+
+void handleOK(char IdMsg,char IdDest[BUFSZ], char Payload[BUFSZ]){
+   char response[BUFSZ];
+   memset(response, 0, BUFSZ);
+
+   switch (atoi(Payload)){
+	case 1:
+		break;
+	case 2:
+		printf("New ID: 0%s \n",IdDest);
+   }
+}
+void handleResponse(char buf[BUFSZ], int csock){
+	//separamos os parametros da mensagem, como explicado no PDF
+	char *IdMsg = malloc(sizeof(char)*BUFSZ);
+	char *IdOrigin = malloc(sizeof(char)*BUFSZ);
+	char *IdDest = malloc(sizeof(char)*BUFSZ);
+	char *Payload = malloc(sizeof(char)*BUFSZ);
+
+	//separando os parametros
+	IdMsg = strtok(buf, " ");
+	IdOrigin = strtok(NULL, " ");
+	IdDest = strtok(NULL, " ");
+	Payload = strtok(NULL, " ");
+
+	switch (atoi(IdMsg)){
+	{	
+	case 1:
+		/* code */
+		break;
+	case 2:
+		/* code */
+		break;
+	case 3:
+		/* code */
+		break;
+	case 4:
+		/* code */
+		break;
+	case 5:
+		/* code */
+		break;
+	case 6:
+		/* code */
+		break;
+	case 7:
+		handleERROR(IdDest, Payload,csock);
+		//close(csock);
+		break;
+	case 8:	
+		handleOK(IdMsg, IdDest, Payload);
+		break;
+	default:
+		break;
+	}
+	return;
+}
+}
 void usage(int argc, char **argv) {
 	printf("usage: %s <server IP> <server port>\n", argv[0]);
 	printf("example: %s 127.0.0.1 51511\n", argv[0]);
@@ -40,9 +121,15 @@ int main(int argc, char **argv) {
 	char addrstr[BUFSZ];
 	addrtostr(addr, addrstr, BUFSZ);
 
-	printf("connected to %s\n", addrstr);
-
 	char buf[BUFSZ];
+	memset(buf, 0, BUFSZ);
+	printf("connected to %s\n", addrstr);
+	recv(s, buf, BUFSZ, 0);
+	handleResponse(buf, s);
+	memset(buf, 0, BUFSZ);
+	if(flagRemove == 1){
+		return 0;
+	}
 	while(1) {
 	memset(buf, 0, BUFSZ);
 	printf("mensagem> ");
