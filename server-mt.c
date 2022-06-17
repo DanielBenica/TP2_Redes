@@ -19,7 +19,7 @@ void BroadcastNewEquipment(int IdEquipment, char buf[BUFSZ]){
     int i;    
     for(i = 0; i < MAX_CLIENTS; i++){
         if(Sockets[i] != 0){
-            send(Sockets[i],message,strlen(message)+1,0);
+            send(Sockets[i],buf,strlen(buf)+1,0);
         }
 }
 }
