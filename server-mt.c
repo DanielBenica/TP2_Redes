@@ -15,6 +15,29 @@ int Equipamentos[15];
 //Vetor de sockets
 int Sockets[MAX_CLIENTS] = {0};
 
+void listEquipments(char buf[BUFSZ],int IdEquip){
+    memset(buf, 0, BUFSZ);
+    char aux[BUFSZ];
+    memset(aux, 0, BUFSZ);
+    for(int i = 0; i < MAX_CLIENTS; i++){
+        if(Sockets[i] != 0 && (i+1) != IdEquip){
+            sprintf(buf, "%s 0%d", buf, i+1);
+        }
+        }
+
+    strcpy(buf, strrchr(buf,'0'));
+    strcpy(aux,buf);
+    sprintf(buf,"4 - - %s",aux);
+}
+
+void handleBuf(char buf[BUFSZ], int IdEquip){
+    //comparamos os inputs
+    if(strcmp(buf,"list equipment\n") == 0){
+        listEquipments(buf,IdEquip);
+    }
+
+}
+
 void BroadcastNewEquipment(int IdEquipment, char buf[BUFSZ]){
     int i;    
     for(i = 0; i < MAX_CLIENTS; i++){
@@ -54,7 +77,7 @@ int addEquipment(char buf[BUFSZ],int csock){
     // coloca o ID do equipamento no buffer e an resposta
     sprintf(response, "3 - - %d", NumEquip);
     send(csock, response, strlen(response) + 1, 0);
-    sprintf(buf,"Equipament 0%d added", NumEquip);
+    sprintf(buf,"Equipment 0%d added", NumEquip);
     return NumEquip;
 }
 
@@ -93,17 +116,29 @@ void * client_thread(void *data) {
        return;
     }
     //Implementar a logica de broadcast aqui
-    BroadcastNewEquipment(IdEquipamento,buf);
+    //BroadcastNewEquipment(IdEquipamento,buf);
     
     while(1){
     memset(buf, 0, BUFSZ);
     printf("[log] waiting for data\n");	
     //Guarda em buf o que o cliente enviou
-    size_t count = recv(cdata->csock, buf, BUFSZ - 1, 0);
+    size_t count = recv(Sockets[IdEquipamento-1], buf, BUFSZ - 1, 0);
     printf("[msg] %s, %d bytes: %s\n", caddrstr, (int)count, buf);
-   
+
+    //Se o cliente enviar um comando de sair, fechamos o socket
+    if(strcmp(buf,"close connection\n") == 0){
+        printf("Equipment 0%d removed\n",IdEquipamento);
+        sprintf(response, "2 %d - -", IdEquipamento);	
+        send(Sockets[IdEquipamento-1], response, strlen(response) + 1, 0);
+        close(Sockets[IdEquipamento-1]);
+        Sockets[IdEquipamento-1] = 0;
+        return;
+    }
+    //Caso contrário chamaos a funçõ para tratar a entrada do cliente
+    handleBuf(buf,IdEquipamento);
     puts(buf);
-    count = send(cdata->csock, buf, strlen(buf) + 1, 0);
+    //puts(buf);
+    count = send(Sockets[IdEquipamento-1], buf, strlen(buf) + 1, 0);
     if (count != strlen(buf) + 1) {
         logexit("send");
     }

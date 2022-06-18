@@ -12,6 +12,19 @@
 
 int flagRemove = 0;
 
+void handleRES_LIST(char buf[BUFSZ]){
+	puts(buf);
+}
+
+void handleREQ_REM(char IdOrigin[BUFSZ], int s){
+	char response[BUFSZ];
+	memset(response, 0, BUFSZ);
+	close(s);
+	sprintf(response,"Successful removal");
+	printf("%s\n",response);
+	flagRemove = 1;
+}
+
 void handleERROR(char IdDest[BUFSZ], char Payload[BUFSZ],int s){
    char response[BUFSZ];
    memset(response, 0, BUFSZ);
@@ -62,36 +75,39 @@ void handleResponse(char buf[BUFSZ], int csock){
 	IdDest = strtok(NULL, " ");
 	Payload = strtok(NULL, " ");
 
-	switch (atoi(IdMsg)){
-	{	
-	case 1:
-		/* code */
-		break;
-	case 2:
-		/* code */
-		break;
-	case 3:
-		handleRES_ADD(Payload);
-		break;
-	case 4:
-		/* code */
-		break;
-	case 5:
-		/* code */
-		break;
-	case 6:
-		/* code */
-		break;
-	case 7:
-		handleERROR(IdDest, Payload,csock);
-		//close(csock);
-		break;
-	case 8:	
-		handleOK(IdDest, Payload);
-		break;
-	default:
-		break;
-	}
+
+
+		switch (atoi(IdMsg)){
+		{	
+		case 1:
+			/* code */
+			break;
+		case 2:
+			handleREQ_REM(IdOrigin,csock);
+			break;
+		case 3:
+			handleRES_ADD(Payload);
+			break;
+		case 4:
+			handleRES_LIST(Payload);
+			break;
+		case 5:
+			/* code */
+			break;
+		case 6:
+			/* code */
+			break;
+		case 7:
+			handleERROR(IdDest, Payload,csock);
+			//close(csock);
+			break;
+		case 8:	
+			handleOK(IdDest, Payload);
+			break;
+		default:
+			break;
+		}
+
 	return;
 }
 }
@@ -153,11 +169,12 @@ int main(int argc, char **argv) {
 			break;
 		}
 		total += count;
+	handleResponse(buf,s);
+	if(flagRemove == 1){
+		break;
+	}
 	}
 	close(s);
-
-	//printf("received %u bytes\n", total);
-	puts(buf);
 
 	exit(EXIT_SUCCESS);
 }
