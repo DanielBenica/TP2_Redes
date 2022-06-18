@@ -15,25 +15,58 @@ int Equipamentos[15];
 //Vetor de sockets
 int Sockets[MAX_CLIENTS] = {0};
 
+void readEquipment(char buf[BUFSZ]){
+    char *aux = malloc(sizeof(char)*BUFSZ);
+    memset(aux, 0, BUFSZ);
+    float value = (float)rand()/(float)(RAND_MAX/10);
+    aux = strtok(buf, " ");
+    aux = strtok(NULL, " ");
+    aux = strtok(NULL, " ");
+    aux = strtok(NULL, " ");
+    
+
+    //verificar se o equipamento existe
+    if(Sockets[atoi(aux)-1] == 0){
+        sprintf(buf,"Equipment 0%d not found\n",atoi(aux));
+        puts(buf);
+        sprintf(buf, "7 - - 3");
+
+    }
+    else{
+        sprintf(buf,"6 - 0%d %.2f",atoi(aux),value);
+    }
+}
+
 void listEquipments(char buf[BUFSZ],int IdEquip){
     memset(buf, 0, BUFSZ);
     char aux[BUFSZ];
-    memset(aux, 0, BUFSZ);
+   
     for(int i = 0; i < MAX_CLIENTS; i++){
         if(Sockets[i] != 0 && (i+1) != IdEquip){
-            sprintf(buf, "%s 0%d", buf, i+1);
+            memset(aux, 0, BUFSZ);
+            sprintf(aux, "0%d ", i+1);
+            strcat(buf, aux);
         }
         }
 
-    strcpy(buf, strrchr(buf,'0'));
-    strcpy(aux,buf);
+
+    memset(aux, 0, BUFSZ);
+    strncpy(aux, buf, strlen(buf) - 1);
     sprintf(buf,"4 - - %s",aux);
+
 }
 
 void handleBuf(char buf[BUFSZ], int IdEquip){
     //comparamos os inputs
+    char aux[BUFSZ];
+    memset(aux, 0, BUFSZ);
+    strcpy(aux, buf);
+    strtok(aux, " ");
     if(strcmp(buf,"list equipment\n") == 0){
         listEquipments(buf,IdEquip);
+    }
+    else if(strcmp(aux,"request") == 0){
+        readEquipment(buf);
     }
 
 }
@@ -127,7 +160,7 @@ void * client_thread(void *data) {
 
     //Se o cliente enviar um comando de sair, fechamos o socket
     if(strcmp(buf,"close connection\n") == 0){
-        printf("Equipment 0%d removed\n",IdEquipamento);
+        printf("Equipment 0%d removed",IdEquipamento);
         sprintf(response, "2 %d - -", IdEquipamento);	
         send(Sockets[IdEquipamento-1], response, strlen(response) + 1, 0);
         close(Sockets[IdEquipamento-1]);
@@ -136,7 +169,6 @@ void * client_thread(void *data) {
     }
     //Caso contrário chamaos a funçõ para tratar a entrada do cliente
     handleBuf(buf,IdEquipamento);
-    puts(buf);
     //puts(buf);
     count = send(Sockets[IdEquipamento-1], buf, strlen(buf) + 1, 0);
     if (count != strlen(buf) + 1) {

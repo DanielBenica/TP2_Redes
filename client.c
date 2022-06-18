@@ -12,6 +12,14 @@
 
 int flagRemove = 0;
 
+void handleRES_INF(char IdDest[BUFSZ],char Payload[BUFSZ]){
+	char response[BUFSZ];
+	memset(response, 0, BUFSZ);
+
+	sprintf(response, "Value from %s: %s",IdDest, Payload);
+	puts(response);
+}
+
 void handleRES_LIST(char buf[BUFSZ]){
 	puts(buf);
 }
@@ -35,6 +43,7 @@ void handleERROR(char IdDest[BUFSZ], char Payload[BUFSZ],int s){
 	case 2:
 		break;
 	case 3:
+		printf("Target equipment not found\n");
 		break;
 	case 4:
 		printf("Equipment limit exceded\n");
@@ -73,8 +82,7 @@ void handleResponse(char buf[BUFSZ], int csock){
 	IdMsg = strtok(buf, " ");
 	IdOrigin = strtok(NULL, " ");
 	IdDest = strtok(NULL, " ");
-	Payload = strtok(NULL, " ");
-
+	Payload = strtok(NULL, "");
 
 
 		switch (atoi(IdMsg)){
@@ -95,7 +103,7 @@ void handleResponse(char buf[BUFSZ], int csock){
 			/* code */
 			break;
 		case 6:
-			/* code */
+			handleRES_INF(IdDest,Payload);
 			break;
 		case 7:
 			handleERROR(IdDest, Payload,csock);
