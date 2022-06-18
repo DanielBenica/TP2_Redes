@@ -28,7 +28,7 @@ int addEquipment(char buf[BUFSZ],int csock){
    //Verificamos o numero total de equipamentos
    char response[BUFSZ];
    memset(response, 0, BUFSZ);
-   int equipTotais = 14;
+   int equipTotais = 0;
    for(int i = 0; i < MAX_CLIENTS; i++){
       if(Sockets[i] != 0){
         equipTotais ++;
@@ -52,7 +52,7 @@ int addEquipment(char buf[BUFSZ],int csock){
         }
     }
     // coloca o ID do equipamento no buffer e an resposta
-    sprintf(response, "8 - %d 2", NumEquip);
+    sprintf(response, "3 - - %d", NumEquip);
     send(csock, response, strlen(response) + 1, 0);
     sprintf(buf,"Equipament 0%d added", NumEquip);
     return NumEquip;
@@ -94,8 +94,7 @@ void * client_thread(void *data) {
     }
     //Implementar a logica de broadcast aqui
     BroadcastNewEquipment(IdEquipamento,buf);
-    //colocar um send com e evniar a resposta para o cliente
-    //send(cdata->csock, response, strlen(response) + 1, 0);
+    
     while(1){
     memset(buf, 0, BUFSZ);
     printf("[log] waiting for data\n");	
@@ -115,12 +114,12 @@ void * client_thread(void *data) {
 }
 
 int main(int argc, char **argv) {
-    if (argc < 3) {
+    if (argc < 2) {
         usage(argc, argv);
     }
-
+    const char* IpVersion = "v4";
     struct sockaddr_storage storage;
-    if (0 != server_sockaddr_init(argv[1], argv[2], &storage)) {
+    if (0 != server_sockaddr_init(IpVersion, argv[1], &storage)) {
         usage(argc, argv);
     }
 

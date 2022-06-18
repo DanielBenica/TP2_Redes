@@ -33,17 +33,22 @@ void handleERROR(char IdDest[BUFSZ], char Payload[BUFSZ],int s){
 
 }
 
-void handleOK(char IdMsg,char IdDest[BUFSZ], char Payload[BUFSZ]){
+void handleOK(char IdDest[BUFSZ], char Payload[BUFSZ]){
    char response[BUFSZ];
    memset(response, 0, BUFSZ);
 
-   switch (atoi(Payload)){
-	case 1:
-		break;
-	case 2:
-		printf("New ID: 0%s \n",IdDest);
+	sprintf(response, "Successful removal");
    }
+
+void handleRES_ADD(char Payload[BUFSZ]){
+   char response[BUFSZ];
+   memset(response, 0, BUFSZ);
+   
+   sprintf(response, "New ID: 0%s\n", Payload);
+   printf("%s",response);
+
 }
+
 void handleResponse(char buf[BUFSZ], int csock){
 	//separamos os parametros da mensagem, como explicado no PDF
 	char *IdMsg = malloc(sizeof(char)*BUFSZ);
@@ -66,7 +71,7 @@ void handleResponse(char buf[BUFSZ], int csock){
 		/* code */
 		break;
 	case 3:
-		/* code */
+		handleRES_ADD(Payload);
 		break;
 	case 4:
 		/* code */
@@ -82,7 +87,7 @@ void handleResponse(char buf[BUFSZ], int csock){
 		//close(csock);
 		break;
 	case 8:	
-		handleOK(IdMsg, IdDest, Payload);
+		handleOK(IdDest, Payload);
 		break;
 	default:
 		break;
@@ -90,6 +95,7 @@ void handleResponse(char buf[BUFSZ], int csock){
 	return;
 }
 }
+
 void usage(int argc, char **argv) {
 	printf("usage: %s <server IP> <server port>\n", argv[0]);
 	printf("example: %s 127.0.0.1 51511\n", argv[0]);
