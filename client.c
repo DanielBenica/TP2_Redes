@@ -39,6 +39,7 @@ void handleERROR(char IdDest[BUFSZ], char Payload[BUFSZ],int s){
 
    switch (atoi(Payload)){
 	case 1:
+		printf("Equipment not found\n");
 		break;
 	case 2:
 		break;

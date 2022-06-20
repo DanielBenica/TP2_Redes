@@ -40,20 +40,25 @@ void readEquipment(char buf[BUFSZ]){
 void listEquipments(char buf[BUFSZ],int IdEquip){
     memset(buf, 0, BUFSZ);
     char aux[BUFSZ];
-   
+    int NumEquips = 0;
     for(int i = 0; i < MAX_CLIENTS; i++){
         if(Sockets[i] != 0 && (i+1) != IdEquip){
             memset(aux, 0, BUFSZ);
             sprintf(aux, "0%d ", i+1);
             strcat(buf, aux);
+            NumEquips++;
         }
         }
 
 
     memset(aux, 0, BUFSZ);
+    if (!NumEquips){
+        sprintf(buf,"7 - - 1");
+    }
+    else{
     strncpy(aux, buf, strlen(buf) - 1);
     sprintf(buf,"4 - - %s",aux);
-
+    }
 }
 
 void handleBuf(char buf[BUFSZ], int IdEquip){
