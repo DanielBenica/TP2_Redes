@@ -6,7 +6,7 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Sat Jun 25 15:31:53 2022
+# Make data base, printed on Sat Jun 25 16:31:08 2022
 
 # Variables
 
@@ -53,7 +53,7 @@ PATH = /home/daniel/.vscode-server/bin/30d9c6cd9483b2cc586687151bcbcd635f373630/
 # environment
 VSCODE_LOG_STACK = false
 # environment
-VSCODE_IPC_HOOK_CLI = /tmp/vscode-ipc-29fcd4aa-9fad-4c28-8dbf-d77f512d8a71.sock
+VSCODE_IPC_HOOK_CLI = /tmp/vscode-ipc-b8f4d54e-7cd0-4660-b025-fd57ff3b55e1.sock
 # default
 .FEATURES := target-specific order-only second-expansion else-if shortest-stem undefine oneshell archives jobserver output-sync check-symlink load
 # environment
@@ -190,7 +190,7 @@ all:
 # Load=8/32=25%, Rehash=0, Collisions=1/11=9%
 #  recipe to execute (from 'Makefile', line 2):
 	gcc -Wall -c common.c
-	gcc -Wall client.c common.o -o client
+	gcc -Wall client.c common.o -lpthread -o client
 	gcc -Wall server-mt.c common.o -lpthread -o server-mt
 
 # Not a target:
@@ -202,7 +202,7 @@ all:
 # Not a target:
 Makefile:
 #  Implicit rule search has been done.
-#  Last modified 2022-06-15 16:29:06.8429323
+#  Last modified 2022-06-25 16:05:58.5018402
 #  File has been updated.
 #  Successfully updated.
 
@@ -233,6 +233,6 @@ clean:
 # strcache performance: lookups = 28 / hit rate = 28%
 # hash-table stats:
 # Load=20/8192=0%, Rehash=0, Collisions=1/28=4%
-# Finished Make data base on Sat Jun 25 15:31:53 2022
+# Finished Make data base on Sat Jun 25 16:31:08 2022
 
  

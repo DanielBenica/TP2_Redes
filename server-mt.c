@@ -76,10 +76,11 @@ void handleBuf(char buf[BUFSZ], int IdEquip){
 
 }
 
-void BroadcastNewEquipment(int IdEquipment, char buf[BUFSZ]){
+void BroadcastNewEquipment(char buf[BUFSZ],int IdEquipment){
     int i;    
+    IdEquipment = IdEquipment -1;
     for(i = 0; i < MAX_CLIENTS; i++){
-        if(Sockets[i] != 0){
+        if(Sockets[i] != 0 && i != IdEquipment){
             send(Sockets[i],buf,strlen(buf)+1,0);
         }
 }
@@ -116,6 +117,9 @@ int addEquipment(char buf[BUFSZ],int csock){
     sprintf(response, "3 - - %d", NumEquip);
     send(csock, response, strlen(response) + 1, 0);
     sprintf(buf,"Equipment 0%d added", NumEquip);
+    memset(response,0,BUFSZ);
+    sprintf(response, "1 %d - -", NumEquip);
+    BroadcastNewEquipment(response,NumEquip);
     return NumEquip;
 }
 
@@ -158,10 +162,10 @@ void * client_thread(void *data) {
     
     while(1){
     memset(buf, 0, BUFSZ);
-    printf("[log] waiting for data\n");	
+
     //Guarda em buf o que o cliente enviou
-    size_t count = recv(Sockets[IdEquipamento-1], buf, BUFSZ - 1, 0);
-    printf("[msg] %s, %d bytes: %s\n", caddrstr, (int)count, buf);
+    recv(Sockets[IdEquipamento-1], buf, BUFSZ - 1, 0);
+    memset(response, 0, BUFSZ);
 
     //Se o cliente enviar um comando de sair, fechamos o socket
     if(strcmp(buf,"close connection\n") == 0){
@@ -173,14 +177,9 @@ void * client_thread(void *data) {
         pthread_exit(EXIT_SUCCESS);
     }
 
-    // if(strcmp(buf,"caio\n") == 0){
-    //     sprintf(buf, "7 - - 3");
-    //     send(Sockets[IdEquipamento], buf, strlen(buf) + 1, 0);
-    //     }
-    //Caso contrário chamaos a funçõ para tratar a entrada do cliente
     handleBuf(buf,IdEquipamento);
     //puts(buf);
-    count = send(Sockets[IdEquipamento-1], buf, strlen(buf) + 1, 0);
+   int count = send(Sockets[IdEquipamento-1], buf, strlen(buf) + 1, 0);
     if (count != strlen(buf) + 1) {
         logexit("send");
     }

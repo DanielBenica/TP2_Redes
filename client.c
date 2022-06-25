@@ -4,13 +4,25 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
-
+#include <pthread.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #define BUFSZ 1024
 
 int flagRemove = 0;
+
+
+struct client_data {
+    int csock;
+};
+
+void handleREQ_ADD(char IdOrigin[BUFSZ]){
+	char buf[BUFSZ];
+	memset(buf,0,BUFSZ);
+	sprintf(buf,"Equipment 0%d added",atoi(IdOrigin));
+	puts(buf);
+}
 
 
 void handleRES_INF(char IdDest[BUFSZ],char Payload[BUFSZ]){
@@ -28,10 +40,11 @@ void handleRES_LIST(char buf[BUFSZ]){
 void handleREQ_REM(char IdOrigin[BUFSZ], int s){
 	char response[BUFSZ];
 	memset(response, 0, BUFSZ);
-	close(s);
 	sprintf(response,"Successful removal");
 	printf("%s\n",response);
 	flagRemove = 1;
+	close(s);
+	exit(EXIT_SUCCESS);
 }
 
 void handleERROR(char IdDest[BUFSZ], char Payload[BUFSZ],int s){
@@ -90,7 +103,7 @@ void handleResponse(char buf[BUFSZ], int csock){
 		switch (atoi(IdMsg)){
 		{	
 		case 1:
-			/* code */
+			handleREQ_ADD(IdOrigin);
 			break;
 		case 2:
 			handleREQ_REM(IdOrigin,csock);
@@ -130,6 +143,28 @@ void usage(int argc, char **argv) {
 
 #define BUFSZ 1024
 
+
+void * client_thread(void *data) {
+    struct client_data *cdata = (struct client_data *)data;
+
+	while(1){
+		char buf[BUFSZ];
+		memset(buf, 0, BUFSZ);
+		recv(cdata->csock, buf, BUFSZ + 1, 0);
+		if(strlen(buf)!= 0){
+		handleResponse(buf,cdata->csock);
+		}
+	}
+	//close(cdata->csock);
+	exit(EXIT_SUCCESS);
+}
+
+
+
+
+
+
+
 int main(int argc, char **argv) {
 	if (argc < 3) {
 		usage(argc, argv);
@@ -159,32 +194,39 @@ int main(int argc, char **argv) {
 	recv(s, buf, BUFSZ, 0);
 	handleResponse(buf, s);
 	memset(buf, 0, BUFSZ);
-	if(flagRemove == 1){
-		return 0;
-	}
+	// if(flagRemove == 1){
+	// 	return 0;
+	// }
 	while(1) {
 	memset(buf, 0, BUFSZ);
-	printf("mensagem> ");
+	struct client_data *cdata = malloc(sizeof(*cdata));
+	if (!cdata) {
+		logexit("malloc");
+	}
+	cdata->csock = s;
+
+        pthread_t tid;
+        pthread_create(&tid, NULL, client_thread, cdata);
+
+	memset(buf, 0, BUFSZ);
 	fgets(buf, BUFSZ-1, stdin);
 	size_t count = send(s, buf, strlen(buf)+1, 0);
 	if (count != strlen(buf)+1) {
 		logexit("send");
 	}
-
-	memset(buf, 0, BUFSZ);
-	unsigned total = 0;
-		count = recv(s, buf + total, BUFSZ - total, 0);
-		if (count == 0) {
-			// Connection terminated.
-			break;
-		}
-		total += count;
-	handleResponse(buf,s);
-	if(flagRemove == 1){
-		break;
+	// unsigned total = 0;
+	// 	count = recv(s, buf + total, BUFSZ - total, 0);
+	// 	if (count == 0) {
+	// 		// Connection terminated.
+	// 		break;
+	// 	}
+	// 	total += count;
+	//handleResponse(buf,s);
+	// if(flagRemove == 1){
+	// 	break;
+	// }
 	}
-	}
-	close(s);
+	//close(s);
 
 	exit(EXIT_SUCCESS);
 }
