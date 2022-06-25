@@ -86,6 +86,16 @@ void BroadcastNewEquipment(char buf[BUFSZ],int IdEquipment){
 }
 }
 
+void BroadcastRemovedEquipment(char buf[BUFSZ],int IdEquipment){
+    int i;    
+    IdEquipment = IdEquipment -1;
+    for(i = 0; i < MAX_CLIENTS; i++){
+        if(Sockets[i] != 0 && i != IdEquipment){
+            send(Sockets[i],buf,strlen(buf)+1,0);
+        }
+}
+}
+
 int addEquipment(char buf[BUFSZ],int csock){
    //Verificamos o numero total de equipamentos
    char response[BUFSZ];
@@ -172,6 +182,9 @@ void * client_thread(void *data) {
         printf("Equipment 0%d removed\n",IdEquipamento);
         sprintf(response, "2 %d - -", IdEquipamento);	
         send(Sockets[IdEquipamento-1], response, strlen(response) + 1, 0);
+        memset(response,0,BUFSZ);
+        sprintf(response,"9 %d - -",IdEquipamento);
+        BroadcastRemovedEquipment(response,IdEquipamento);
         close(Sockets[IdEquipamento-1]);
         Sockets[IdEquipamento-1] = 0;
         pthread_exit(EXIT_SUCCESS);

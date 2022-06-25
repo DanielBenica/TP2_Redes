@@ -17,6 +17,10 @@ struct client_data {
     int csock;
 };
 
+void handleRES_REM(char IdOrigin[BUFSZ]){
+	printf("Equipment 0%d removed\n",atoi(IdOrigin));
+}
+
 void handleREQ_ADD(char IdOrigin[BUFSZ]){
 	char buf[BUFSZ];
 	memset(buf,0,BUFSZ);
@@ -126,6 +130,9 @@ void handleResponse(char buf[BUFSZ], int csock){
 			break;
 		case 8:	
 			handleOK(IdDest, Payload);
+			break;
+		case 9:
+			handleRES_REM(IdOrigin);
 			break;
 		default:
 			break;
