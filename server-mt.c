@@ -165,13 +165,18 @@ void * client_thread(void *data) {
 
     //Se o cliente enviar um comando de sair, fechamos o socket
     if(strcmp(buf,"close connection\n") == 0){
-        printf("Equipment 0%d removed",IdEquipamento);
+        printf("Equipment 0%d removed\n",IdEquipamento);
         sprintf(response, "2 %d - -", IdEquipamento);	
         send(Sockets[IdEquipamento-1], response, strlen(response) + 1, 0);
         close(Sockets[IdEquipamento-1]);
         Sockets[IdEquipamento-1] = 0;
         return;
     }
+
+    // if(strcmp(buf,"caio\n") == 0){
+    //     sprintf(buf, "7 - - 3");
+    //     send(Sockets[IdEquipamento], buf, strlen(buf) + 1, 0);
+    //     }
     //Caso contrário chamaos a funçõ para tratar a entrada do cliente
     handleBuf(buf,IdEquipamento);
     //puts(buf);
