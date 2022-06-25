@@ -12,6 +12,7 @@
 
 int flagRemove = 0;
 
+
 void handleRES_INF(char IdDest[BUFSZ],char Payload[BUFSZ]){
 	char response[BUFSZ];
 	memset(response, 0, BUFSZ);

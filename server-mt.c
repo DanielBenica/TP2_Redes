@@ -151,7 +151,7 @@ void * client_thread(void *data) {
     puts(buf);
     if(!IdEquipamento){
        close(Sockets[IdEquipamento-1]);
-       return;
+       pthread_exit(EXIT_SUCCESS);
     }
     //Implementar a logica de broadcast aqui
     //BroadcastNewEquipment(IdEquipamento,buf);
@@ -170,7 +170,7 @@ void * client_thread(void *data) {
         send(Sockets[IdEquipamento-1], response, strlen(response) + 1, 0);
         close(Sockets[IdEquipamento-1]);
         Sockets[IdEquipamento-1] = 0;
-        return;
+        pthread_exit(EXIT_SUCCESS);
     }
 
     // if(strcmp(buf,"caio\n") == 0){
