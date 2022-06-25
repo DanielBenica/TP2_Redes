@@ -12,11 +12,15 @@
 #define BUFSZ 1024
 #define MAX_CLIENTS 15  
 int Equipamentos[15];
+int NovaIdEquipamento = 1;
 //Vetor de sockets
 int Sockets[MAX_CLIENTS] = {0};
+int Equipamentos[MAX_CLIENTS] = {0};
 
 void readEquipment(char buf[BUFSZ]){
     char response[BUFSZ];
+    int flag = 0;
+    int Indice;
     memset(response, 0, BUFSZ);
     char *aux = malloc(sizeof(char)*BUFSZ);
     memset(aux, 0, BUFSZ);
@@ -26,9 +30,16 @@ void readEquipment(char buf[BUFSZ]){
     aux = strtok(NULL, " ");
     aux = strtok(NULL, " ");
     
+    //loop para verificar se o id existe
+    for(int i = 0; i<MAX_CLIENTS; i++){
+        if(Equipamentos[i] == atoi(aux)){
+            flag = 1;
+            Indice = i;
+        }
+    }
 
     //verificar se o equipamento existe
-    if(Sockets[atoi(aux)-1] == 0){
+    if(!flag){
         sprintf(buf,"Equipment 0%d not found",atoi(aux));
         puts(buf);
         sprintf(buf, "7 - - 3");
@@ -36,7 +47,7 @@ void readEquipment(char buf[BUFSZ]){
     }
     else{
         sprintf(response,"5 - - -");
-        send(Sockets[atoi(aux)-1],response,strlen(response)+1,0);
+        send(Sockets[Indice],response,strlen(response)+1,0);
         sprintf(buf,"6 - 0%d %.2f",atoi(aux),value);
     }
 }
@@ -48,7 +59,7 @@ void listEquipments(char buf[BUFSZ],int IdEquip){
     for(int i = 0; i < MAX_CLIENTS; i++){
         if(Sockets[i] != 0 && (i+1) != IdEquip){
             memset(aux, 0, BUFSZ);
-            sprintf(aux, "0%d ", i+1);
+            sprintf(aux, "0%d ", Equipamentos[i]);
             strcat(buf, aux);
             NumEquips++;
         }
@@ -118,23 +129,26 @@ int addEquipment(char buf[BUFSZ],int csock){
     }
 
     //fazer o tratamento do ID aqui dentro
-   int NumEquip = 0;
+   int IndiceEquip = 0;
     //cria a novo id para o equipamento
     for(int i = 0; i < MAX_CLIENTS; i++){
         if(Sockets[i] == 0){
-            NumEquip = i+1;
+            IndiceEquip = i+1;
             Sockets[i] = csock;
+            //--------------------------------
+            Equipamentos[i] = NovaIdEquipamento;
+            NovaIdEquipamento++;
             break;
         }
     }
     // coloca o ID do equipamento no buffer e an resposta
-    sprintf(response, "3 - - %d", NumEquip);
+    sprintf(response, "3 - - %d", Equipamentos[IndiceEquip-1]);
     send(csock, response, strlen(response) + 1, 0);
-    sprintf(buf,"Equipment 0%d added", NumEquip);
+    sprintf(buf,"Equipment 0%d added", Equipamentos[IndiceEquip-1]);
     memset(response,0,BUFSZ);
-    sprintf(response, "1 %d - -", NumEquip);
-    BroadcastNewEquipment(response,NumEquip);
-    return NumEquip;
+    sprintf(response, "1 %d - -", Equipamentos[IndiceEquip-1]);
+    BroadcastNewEquipment(response,IndiceEquip);
+    return IndiceEquip;
 }
 
 
@@ -183,11 +197,11 @@ void * client_thread(void *data) {
 
     //Se o cliente enviar um comando de sair, fechamos o socket
     if(strcmp(buf,"close connection\n") == 0){
-        printf("Equipment 0%d removed\n",IdEquipamento);
+        printf("Equipment 0%d removed\n",Equipamentos[IdEquipamento-1]);
         sprintf(response, "2 %d - -", IdEquipamento);	
         send(Sockets[IdEquipamento-1], response, strlen(response) + 1, 0);
         memset(response,0,BUFSZ);
-        sprintf(response,"9 %d - -",IdEquipamento);
+        sprintf(response,"9 %d - -",Equipamentos[IdEquipamento-1]);
         BroadcastRemovedEquipment(response,IdEquipamento);
         close(Sockets[IdEquipamento-1]);
         Sockets[IdEquipamento-1] = 0;
