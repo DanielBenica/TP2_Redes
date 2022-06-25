@@ -119,7 +119,7 @@ void handleResponse(char buf[BUFSZ], int csock){
 			handleRES_LIST(Payload);
 			break;
 		case 5:
-			/* code */
+			printf("requested information\n");
 			break;
 		case 6:
 			handleRES_INF(IdDest,Payload);
@@ -221,19 +221,9 @@ int main(int argc, char **argv) {
 	if (count != strlen(buf)+1) {
 		logexit("send");
 	}
-	// unsigned total = 0;
-	// 	count = recv(s, buf + total, BUFSZ - total, 0);
-	// 	if (count == 0) {
-	// 		// Connection terminated.
-	// 		break;
-	// 	}
-	// 	total += count;
-	//handleResponse(buf,s);
-	// if(flagRemove == 1){
-	// 	break;
-	// }
+
 	}
-	//close(s);
+
 
 	exit(EXIT_SUCCESS);
 }

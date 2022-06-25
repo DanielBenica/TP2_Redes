@@ -16,6 +16,8 @@ int Equipamentos[15];
 int Sockets[MAX_CLIENTS] = {0};
 
 void readEquipment(char buf[BUFSZ]){
+    char response[BUFSZ];
+    memset(response, 0, BUFSZ);
     char *aux = malloc(sizeof(char)*BUFSZ);
     memset(aux, 0, BUFSZ);
     float value = (float)rand()/(float)(RAND_MAX/10);
@@ -27,12 +29,14 @@ void readEquipment(char buf[BUFSZ]){
 
     //verificar se o equipamento existe
     if(Sockets[atoi(aux)-1] == 0){
-        sprintf(buf,"Equipment 0%d not found\n",atoi(aux));
+        sprintf(buf,"Equipment 0%d not found",atoi(aux));
         puts(buf);
         sprintf(buf, "7 - - 3");
 
     }
     else{
+        sprintf(response,"5 - - -");
+        send(Sockets[atoi(aux)-1],response,strlen(response)+1,0);
         sprintf(buf,"6 - 0%d %.2f",atoi(aux),value);
     }
 }
