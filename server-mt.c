@@ -58,10 +58,18 @@ void listEquipments(char buf[BUFSZ],int IdEquip){
     int NumEquips = 0;
     for(int i = 0; i < MAX_CLIENTS; i++){
         if(Sockets[i] != 0 && (i+1) != IdEquip){
-            memset(aux, 0, BUFSZ);
-            sprintf(aux, "0%d ", Equipamentos[i]);
-            strcat(buf, aux);
-            NumEquips++;
+            if(Equipamentos[i] < 10){
+                memset(aux, 0, BUFSZ);
+                sprintf(aux, "0%d ", Equipamentos[i]);
+                strcat(buf, aux);
+                NumEquips++;
+            }
+            else{
+                memset(aux, 0, BUFSZ);
+                sprintf(aux, "%d ", Equipamentos[i]);
+                strcat(buf, aux);
+                NumEquips++;
+            }
         }
         }
 
@@ -144,7 +152,12 @@ int addEquipment(char buf[BUFSZ],int csock){
     // coloca o ID do equipamento no buffer e an resposta
     sprintf(response, "3 - - %d", Equipamentos[IndiceEquip-1]);
     send(csock, response, strlen(response) + 1, 0);
-    sprintf(buf,"Equipment 0%d added", Equipamentos[IndiceEquip-1]);
+    if(Equipamentos[IndiceEquip-1] < 10){
+        sprintf(buf,"Equipment 0%d added", Equipamentos[IndiceEquip-1]);
+    }
+    else{
+        sprintf(buf,"Equipment %d added", Equipamentos[IndiceEquip-1]);
+    }
     memset(response,0,BUFSZ);
     sprintf(response, "1 %d - -", Equipamentos[IndiceEquip-1]);
     BroadcastNewEquipment(response,IndiceEquip);
@@ -197,7 +210,12 @@ void * client_thread(void *data) {
 
     //Se o cliente enviar um comando de sair, fechamos o socket
     if(strcmp(buf,"close connection\n") == 0){
-        printf("Equipment 0%d removed\n",Equipamentos[IdEquipamento-1]);
+        if(Equipamentos[IdEquipamento-1] < 10){
+            printf("Equipment 0%d removed\n",Equipamentos[IdEquipamento-1]);
+        }
+        else{
+            printf("Equipment %d removed\n",Equipamentos[IdEquipamento-1]);
+        }
         sprintf(response, "2 %d - -", IdEquipamento);	
         send(Sockets[IdEquipamento-1], response, strlen(response) + 1, 0);
         memset(response,0,BUFSZ);

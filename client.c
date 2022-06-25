@@ -18,13 +18,23 @@ struct client_data {
 };
 
 void handleRES_REM(char IdOrigin[BUFSZ]){
-	printf("Equipment 0%d removed\n",atoi(IdOrigin));
+	if(atoi(IdOrigin) < 10){
+		printf("Equipment 0%d removed\n",atoi(IdOrigin));
+	}
+	else{
+		printf("Equipment 0%d removed\n",atoi(IdOrigin));
+	}
 }
 
 void handleREQ_ADD(char IdOrigin[BUFSZ]){
 	char buf[BUFSZ];
 	memset(buf,0,BUFSZ);
-	sprintf(buf,"Equipment 0%d added",atoi(IdOrigin));
+	if(atoi(IdOrigin) < 10){
+		sprintf(buf,"Equipment 0%d added",atoi(IdOrigin));
+	}
+	else{
+		sprintf(buf,"Equipment %d added",atoi(IdOrigin));
+	}
 	puts(buf);
 }
 
@@ -32,8 +42,12 @@ void handleREQ_ADD(char IdOrigin[BUFSZ]){
 void handleRES_INF(char IdDest[BUFSZ],char Payload[BUFSZ]){
 	char response[BUFSZ];
 	memset(response, 0, BUFSZ);
-
-	sprintf(response, "Value from %s: %s",IdDest, Payload);
+	if(atoi(IdDest) < 10){
+		sprintf(response, "Value from %s: %s",IdDest, Payload);
+	}
+	else{
+		sprintf(response, "Value from %d: %s",atoi(IdDest), Payload);
+	}
 	puts(response);
 }
 
@@ -84,8 +98,12 @@ void handleOK(char IdDest[BUFSZ], char Payload[BUFSZ]){
 void handleRES_ADD(char Payload[BUFSZ]){
    char response[BUFSZ];
    memset(response, 0, BUFSZ);
-   
+   if(atoi(Payload) < 10){
    sprintf(response, "New ID: 0%s\n", Payload);
+   }
+   else{
+	sprintf(response, "New ID: %s\n", Payload);
+   }
    printf("%s",response);
 
 }
