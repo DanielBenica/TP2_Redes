@@ -71,7 +71,7 @@ void handleERROR(char IdDest[BUFSZ], char Payload[BUFSZ],int s){
 
    switch (atoi(Payload)){
 	case 1:
-		printf("Equipment not found\n");
+		printf("\n");
 		break;
 	case 2:
 		break;
@@ -183,11 +183,6 @@ void * client_thread(void *data) {
 	//close(cdata->csock);
 	exit(EXIT_SUCCESS);
 }
-
-
-
-
-
 
 
 int main(int argc, char **argv) {

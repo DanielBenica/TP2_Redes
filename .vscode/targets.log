@@ -6,7 +6,7 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Sat Jun 25 16:31:08 2022
+# Make data base, printed on Sun Jun 26 15:14:01 2022
 
 # Variables
 
@@ -53,7 +53,7 @@ PATH = /home/daniel/.vscode-server/bin/30d9c6cd9483b2cc586687151bcbcd635f373630/
 # environment
 VSCODE_LOG_STACK = false
 # environment
-VSCODE_IPC_HOOK_CLI = /tmp/vscode-ipc-b8f4d54e-7cd0-4660-b025-fd57ff3b55e1.sock
+VSCODE_IPC_HOOK_CLI = /tmp/vscode-ipc-cb1d5d75-9028-4412-b92f-e8867b9777ae.sock
 # default
 .FEATURES := target-specific order-only second-expansion else-if shortest-stem undefine oneshell archives jobserver output-sync check-symlink load
 # environment
@@ -153,9 +153,9 @@ MOTD_SHOWN = update-motd
 
 # Directories
 
-# . (device 2, inode 29554872555216301): 14 files, no impossibilities.
+# . (device 2, inode 29554872555216301): 13 files, no impossibilities.
 
-# 14 files, no impossibilities in 1 directories.
+# 13 files, no impossibilities in 1 directories.
 
 # Implicit Rules
 
@@ -190,8 +190,8 @@ all:
 # Load=8/32=25%, Rehash=0, Collisions=1/11=9%
 #  recipe to execute (from 'Makefile', line 2):
 	gcc -Wall -c common.c
-	gcc -Wall client.c common.o -lpthread -o client
-	gcc -Wall server-mt.c common.o -lpthread -o server-mt
+	gcc -Wall equipment.c common.o -lpthread -o equipment
+	gcc -Wall server.c common.o -lpthread -o server
 
 # Not a target:
 .SUFFIXES:
@@ -202,7 +202,7 @@ all:
 # Not a target:
 Makefile:
 #  Implicit rule search has been done.
-#  Last modified 2022-06-25 16:05:58.5018402
+#  Last modified 2022-06-26 15:00:37.6505114
 #  File has been updated.
 #  Successfully updated.
 
@@ -227,12 +227,12 @@ clean:
 
 # No general ('VPATH' variable) search path.
 
-# strcache buffers: 1 (0) / strings = 20 / storage = 170 B / avg = 8 B
-# current buf: size = 8162 B / used = 170 B / count = 20 / avg = 8 B
+# strcache buffers: 1 (0) / strings = 19 / storage = 163 B / avg = 8 B
+# current buf: size = 8162 B / used = 163 B / count = 19 / avg = 8 B
 
-# strcache performance: lookups = 28 / hit rate = 28%
+# strcache performance: lookups = 27 / hit rate = 29%
 # hash-table stats:
-# Load=20/8192=0%, Rehash=0, Collisions=1/28=4%
-# Finished Make data base on Sat Jun 25 16:31:08 2022
+# Load=19/8192=0%, Rehash=0, Collisions=1/27=4%
+# Finished Make data base on Sun Jun 26 15:14:01 2022
 
  
