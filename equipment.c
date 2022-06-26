@@ -82,6 +82,7 @@ void handleERROR(char IdDest[BUFSZ], char Payload[BUFSZ],int s){
 		printf("Equipment limit exceded\n");
 		close(s);
 		flagRemove = 1;
+		exit(EXIT_SUCCESS);
 		break;
 		//talvez tem q fechar a conexao
    }
@@ -210,7 +211,6 @@ int main(int argc, char **argv) {
 
 	char buf[BUFSZ];
 	memset(buf, 0, BUFSZ);
-	printf("connected to %s\n", addrstr);
 	recv(s, buf, BUFSZ, 0);
 	handleResponse(buf, s);
 	memset(buf, 0, BUFSZ);

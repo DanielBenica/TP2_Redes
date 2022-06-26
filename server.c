@@ -41,7 +41,7 @@ void readEquipment(char buf[BUFSZ]){
 
     //verificar se o equipamento existe
     if(!flag){
-        sprintf(buf,"Equipment 0%d not found",atoi(aux));
+        sprintf(buf,"Equipment %.2d not found",atoi(aux));
         puts(buf);
         sprintf(buf, "7 - - 3");
 
@@ -194,11 +194,11 @@ void * client_thread(void *data) {
     memset(response, 0, BUFSZ);
     //função para adicionar
     IdEquipamento = addEquipment(buf,cdata->csock);
-    puts(buf);
     if(!IdEquipamento){
        close(Sockets[IdEquipamento-1]);
        pthread_exit(EXIT_SUCCESS);
     }
+    puts(buf);
     //Implementar a logica de broadcast aqui
     //BroadcastNewEquipment(IdEquipamento,buf);
     
@@ -272,7 +272,7 @@ int main(int argc, char **argv) {
 
     char addrstr[BUFSZ];
     addrtostr(addr, addrstr, BUFSZ);
-    printf("bound to %s, waiting connections\n", addrstr);
+
 
     //zeramos o vetor de equipamentos
     memset(Equipamentos, 0, sizeof(Equipamentos));
