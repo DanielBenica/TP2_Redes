@@ -30,9 +30,10 @@ void readEquipment(char buf[BUFSZ]){
     aux = strtok(NULL, " ");
     aux = strtok(NULL, " ");
     
+
     //loop para verificar se o id existe
     for(int i = 0; i<MAX_CLIENTS; i++){
-        if(Equipamentos[i] == atoi(aux)){
+        if(Equipamentos[i] == atoi(aux) && atoi(aux) != 0){
             flag = 1;
             Indice = i;
         }
@@ -223,6 +224,7 @@ void * client_thread(void *data) {
         BroadcastRemovedEquipment(response,IdEquipamento);
         close(Sockets[IdEquipamento-1]);
         Sockets[IdEquipamento-1] = 0;
+        Equipamentos[IdEquipamento-1] = 0;
         pthread_exit(EXIT_SUCCESS);
     }
 
